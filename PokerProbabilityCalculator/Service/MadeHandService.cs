@@ -189,7 +189,7 @@ public class MadeHandService
                 .Count() == 5
             )
         {
-            possibleRoyalFlush.Hand = Hand.RoyalFlush;
+            possibleRoyalFlush = new(Hand.RoyalFlush, Value.A, null, null, null, null);
             return possibleRoyalFlush;
         }
 
@@ -220,10 +220,7 @@ public class MadeHandService
             }
         }
 
-        possibleStraightFlush = new MadeHand();
-
-        possibleStraightFlush.Hand = Hand.StraightFlush;
-        possibleStraightFlush.Value = possibleStraight.Value;
+        possibleStraightFlush = new(Hand.StraightFlush, possibleStraight.Value, null, null, null, null);
 
         return possibleStraightFlush;
     }
@@ -241,15 +238,11 @@ public class MadeHandService
             return possibleFourOfAKind;
         }
 
-        possibleFourOfAKind = new MadeHand();
-
-        possibleFourOfAKind.Hand = Hand.FourOfAKind;
-        possibleFourOfAKind.Value = fourOfAKind.First().Key;
 
         // On occasion, two players have four of a kind, in which case the hand with the better "kicker", that is, the card not part of the four of a kind, determines the winner.
         Value highestCardValueNotInvolvedInFourOfAKind = _cardsInPlay.Where(card => card.Value != possibleFourOfAKind.Value).OrderByDescending(card => card.Value).First().Value;
 
-        possibleFourOfAKind.Value2 = highestCardValueNotInvolvedInFourOfAKind;
+        possibleFourOfAKind = new(Hand.FourOfAKind, fourOfAKind.First().Key, highestCardValueNotInvolvedInFourOfAKind, null, null, null);
 
         return possibleFourOfAKind;
     }
@@ -312,21 +305,20 @@ public class MadeHandService
         {
             Suit flushSuit = flushSuits.First();
 
-            possibleFlush = new MadeHand();
-
-            possibleFlush.Hand = Hand.Flush;
-
             IOrderedEnumerable<Card> orderedCardsInFlushSuit = _cardsInPlay.Where(card => card.Suit == flushSuit).OrderByDescending(card => card.Value);
             Value highestFlushCardValue = orderedCardsInFlushSuit.First().Value;
 
             Stack<Card> stackedCardsInFlushSuit = (Stack<Card>)orderedCardsInFlushSuit;
 
             // Two flushes can be identical except for the smallest card. The higher flush wins, so all Values must be issued.
-            possibleFlush.Value = stackedCardsInFlushSuit.Pop().Value;
-            possibleFlush.Value2 = stackedCardsInFlushSuit.Pop().Value;
-            possibleFlush.Value3 = stackedCardsInFlushSuit.Pop().Value;
-            possibleFlush.Value4 = stackedCardsInFlushSuit.Pop().Value;
-            possibleFlush.Value5 = stackedCardsInFlushSuit.Pop().Value;
+            possibleFlush = new(
+                Hand.Flush, 
+                // We pop sequentially to get the values of the flush.
+                stackedCardsInFlushSuit.Pop().Value,
+                stackedCardsInFlushSuit.Pop().Value,
+                stackedCardsInFlushSuit.Pop().Value,
+                stackedCardsInFlushSuit.Pop().Value,
+                stackedCardsInFlushSuit.Pop().Value);
 
             return possibleFlush;
 
@@ -356,12 +348,14 @@ public class MadeHandService
                                 && cardValues.Contains((Value)((int)bottomCardValue + 3))
                                 && cardValues.Contains((Value)((int)bottomCardValue + 4)))
             {
-                possibleStraight = new MadeHand();
-
-                possibleStraight.Hand = Hand.Straight;
-
-                // The value of the straight is the highest card in the straight.
-                possibleStraight.Value = (Value)((int)bottomCardValue + 4);
+                possibleStraight = new MadeHand(
+                    Hand.Straight,
+                    // The value of the straight is the highest card in the straight.
+                    (Value)((int)bottomCardValue + 4),
+                    null,
+                    null,
+                    null,
+                    null);
             }
         }
 
@@ -380,16 +374,12 @@ public class MadeHandService
             return possibleThreeOfAKind;
         }
 
-        possibleThreeOfAKind = new();
-
-        possibleThreeOfAKind.Hand = Hand.ThreeOfAKind;
-        possibleThreeOfAKind.Value = threeOfAKindQuantities.First().Key;
+        Value threeOfAKindValue = threeOfAKindQuantities.First().Key;
 
         // A three of a kind has two kickers.
-        Stack<Card> cardsOutsideOfThreeOfAKind = (Stack<Card>)_cardsInPlay.Where(card => card.Value != possibleThreeOfAKind.Value).OrderByDescending(card => card.Value);
+        Stack<Card> cardsOutsideOfThreeOfAKind = (Stack<Card>)_cardsInPlay.Where(card => card.Value != threeOfAKindValue).OrderByDescending(card => card.Value);
 
-        possibleThreeOfAKind.Value2 = cardsOutsideOfThreeOfAKind.Pop().Value;
-        possibleThreeOfAKind.Value3 = cardsOutsideOfThreeOfAKind.Pop().Value;
+        possibleThreeOfAKind = new(Hand.ThreeOfAKind, threeOfAKindValue, cardsOutsideOfThreeOfAKind.Pop().Value, cardsOutsideOfThreeOfAKind.Pop().Value, null, null);
 
         return possibleThreeOfAKind;
     }
@@ -406,22 +396,19 @@ public class MadeHandService
             return possibleTwoPair;
         }
 
-        possibleTwoPair = new MadeHand();
-        possibleTwoPair.Hand = Hand.TwoPair;
-
         // The higher pair.
-        possibleTwoPair.Value = pairs.Pop();
+        var twoPairValue1 = pairs.Pop();
         // The lower pair.
-        possibleTwoPair.Value2 = pairs.Pop();
+        var twoPairValue2 = pairs.Pop();
 
         // The kicker that plays with this two pair.
         Value highestCardNotInTwoPair = _cardsInPlay
             // Cards not in the two pair.
-            .Where(card => card.Value != possibleTwoPair.Value && card.Value != possibleTwoPair.Value2)
+            .Where(card => card.Value != twoPairValue1 && card.Value != twoPairValue2)
             .OrderByDescending(card => card.Value)
             .First().Value;
 
-        possibleTwoPair.Value3 = highestCardNotInTwoPair;
+        possibleTwoPair = new(Hand.TwoPair, twoPairValue1, twoPairValue2, highestCardNotInTwoPair, null, null);
 
         return possibleTwoPair;
    }
@@ -436,16 +423,12 @@ public class MadeHandService
         if (pair.Count() < 1)
             return possibleOnePair;
 
-        possibleOnePair = new MadeHand();
-        possibleOnePair.Hand = Hand.OnePair;
-        possibleOnePair.Value = pair.First();
+        var onePairValue = pair.First();
 
         // One pair hand has three "kickers" the three remaining cards with the highest value.
-        Stack<Value> remainingCards = (Stack<Value>)_cardsInPlay.Where(card => card.Value != possibleOnePair.Value).OrderByDescending(card => card.Value).Select(card => card.Value);
+        Stack<Value> remainingCards = (Stack<Value>)_cardsInPlay.Where(card => card.Value != onePairValue).OrderByDescending(card => card.Value).Select(card => card.Value);
 
-        possibleOnePair.Value2 = remainingCards.Pop();
-        possibleOnePair.Value3 = remainingCards.Pop();
-        possibleOnePair.Value4 = remainingCards.Pop();
+        possibleOnePair = new(Hand.OnePair, onePairValue, remainingCards.Pop(), remainingCards.Pop(), remainingCards.Pop(), null);
 
         return possibleOnePair;
     }
@@ -456,13 +439,7 @@ public class MadeHandService
 
         Stack<Card> fiveHighestCards = (Stack<Card>)_cardsInPlay.OrderByDescending(card => card.Value).Take(5);
 
-        MadeHand highCard = new MadeHand();
-        highCard.Hand = Hand.HighCard;
-        highCard.Value = fiveHighestCards.Pop().Value;
-        highCard.Value2 = fiveHighestCards.Pop().Value;
-        highCard.Value3 = fiveHighestCards.Pop().Value;
-        highCard.Value4 = fiveHighestCards.Pop().Value;
-        highCard.Value5 = fiveHighestCards.Pop().Value;
+        MadeHand highCard = new(Hand.HighCard, fiveHighestCards.Pop().Value, fiveHighestCards.Pop().Value, fiveHighestCards.Pop().Value, fiveHighestCards.Pop().Value, fiveHighestCards.Pop().Value);
 
         return highCard;
     }
