@@ -1,4 +1,5 @@
 ﻿namespace PokerProbabilityCalculator.Model;
+
 public class Flop
 {
     public Card Card1 { get; set; }
