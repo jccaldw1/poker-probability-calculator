@@ -16,7 +16,7 @@ public class MadeHandService
 
     public MadeHandService(List<Card> cardsInPlay)
     {
-        this._cardsInPlay = cardsInPlay;
+        _cardsInPlay = cardsInPlay;
     }
 
     public MadeHandService(PlayerHand playerHand, Board board)
@@ -425,7 +425,7 @@ public class MadeHandService
 
         var onePairValue = pair.First();
 
-        // One pair hand has three "kickers" the three remaining cards with the highest value.
+        // One pair hand has three "kickers", the three remaining cards with the highest value.
         Stack<Value> remainingCards = (Stack<Value>)_cardsInPlay.Where(card => card.Value != onePairValue).OrderByDescending(card => card.Value).Select(card => card.Value);
 
         possibleOnePair = new(Hand.OnePair, onePairValue, remainingCards.Pop(), remainingCards.Pop(), remainingCards.Pop(), null);
