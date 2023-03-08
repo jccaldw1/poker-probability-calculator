@@ -38,7 +38,6 @@ public class ProbabilityCalculatorService
         // Base step
         if(currentBoard.GetCards().Count == 5)
         {
-            Console.WriteLine("Board consists of: " + currentBoard.Flop.Card1 + "; " + currentBoard.Flop.Card2 + "; " + currentBoard.Flop.Card3 + "; " + currentBoard.Turn + "; " + currentBoard.River);
             List<MadeHand> madeHands = new();
 
             // Keep track of the made hands that the player's hands make.
@@ -77,7 +76,13 @@ public class ProbabilityCalculatorService
         {
             foreach(Card card in deck.cards)
             {
-                Board newBoard = currentBoard.PlayCardOnBoard(card);
+                //Console.WriteLine("Card to add: " + card);
+                Board newBoard = new Board();
+                newBoard.Flop = currentBoard.Flop;
+                newBoard.Turn = currentBoard.Turn;
+                newBoard.River = currentBoard.River;
+
+                newBoard.PlayCardOnBoard(card);
 
                 CalculateWinningProbabilities(liveHands, newBoard);
             }
