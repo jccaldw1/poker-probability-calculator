@@ -1,5 +1,8 @@
 ﻿// See https://aka.ms/new-console-template for more information
-using PokerProbabilityCalculator;
+using PokerProbabilityCalculatorTest.Tests;
 
 Console.WriteLine("Hello, World!");
-var pokerProbabilityCalculator = new ProbabilityCalculator();
+
+HeadsUpTests headsUpTests = new();
+
+headsUpTests.TestKingsVersusQueens();
