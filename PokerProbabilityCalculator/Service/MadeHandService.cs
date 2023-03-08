@@ -240,9 +240,10 @@ public class MadeHandService
             return possibleFourOfAKind;
         }
 
+        Value fourOfAKindValue = fourOfAKind.First().Key;
 
         // On occasion, two players have four of a kind, in which case the hand with the better "kicker", that is, the card not part of the four of a kind, determines the winner.
-        Value highestCardValueNotInvolvedInFourOfAKind = _cardsInPlay.Where(card => card.Value != possibleFourOfAKind.Value).OrderByDescending(card => card.Value).First().Value;
+        Value highestCardValueNotInvolvedInFourOfAKind = _cardsInPlay.Where(card => card.Value != fourOfAKindValue).OrderByDescending(card => card.Value).First().Value;
 
         possibleFourOfAKind = new(Hand.FourOfAKind, fourOfAKind.First().Key, highestCardValueNotInvolvedInFourOfAKind, null, null, null);
 
@@ -310,7 +311,7 @@ public class MadeHandService
             IOrderedEnumerable<Card> orderedCardsInFlushSuit = _cardsInPlay.Where(card => card.Suit == flushSuit).OrderByDescending(card => card.Value);
             Value highestFlushCardValue = orderedCardsInFlushSuit.First().Value;
 
-            Stack<Card> stackedCardsInFlushSuit = (Stack<Card>)orderedCardsInFlushSuit;
+            Stack<Card> stackedCardsInFlushSuit = convertListToStack(orderedCardsInFlushSuit.ToList());
 
             // Two flushes can be identical except for the smallest card. The higher flush wins, so all Values must be issued.
             possibleFlush = new(
@@ -439,7 +440,7 @@ public class MadeHandService
     {
         // By this point, we are certain that the player only has a high card. So we can simply sort the cards in play to get the player's hand.
 
-        Stack<Card> fiveHighestCards = (Stack<Card>)_cardsInPlay.OrderByDescending(card => card.Value).Take(5);
+        Stack<Card> fiveHighestCards = convertListToStack(_cardsInPlay.OrderByDescending(card => card.Value).Take(5).ToList());
 
         MadeHand highCard = new(Hand.HighCard, fiveHighestCards.Pop().Value, fiveHighestCards.Pop().Value, fiveHighestCards.Pop().Value, fiveHighestCards.Pop().Value, fiveHighestCards.Pop().Value);
 
