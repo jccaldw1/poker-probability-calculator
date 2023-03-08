@@ -34,11 +34,12 @@ public class Board
     // TODO: If a card cannot be played, this method silently fails.
     public Board PlayCardOnBoard(Card cardToPlay)
     {
-        if (Flop.Card1 == null)
+        if(Flop == null)
         {
+            Flop = new Flop();
             Flop.Card1 = cardToPlay;
         }
-        else if(Flop.Card2 == null)
+        else if (Flop.Card2 == null)
         {
             Flop.Card2 = cardToPlay;
         }
