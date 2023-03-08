@@ -38,6 +38,7 @@ public class ProbabilityCalculatorService
         // Base step
         if(currentBoard.GetCards().Count == 5)
         {
+            Console.WriteLine("Board consists of: " + currentBoard.Flop.Card1 + "; " + currentBoard.Flop.Card2 + "; " + currentBoard.Flop.Card3 + "; " + currentBoard.Turn + "; " + currentBoard.River);
             List<MadeHand> madeHands = new();
 
             // Keep track of the made hands that the player's hands make.
