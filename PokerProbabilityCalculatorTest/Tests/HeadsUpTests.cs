@@ -15,6 +15,19 @@ public class HeadsUpTests
 
     }
 
+    private void TestAnyTwoHands(PlayerHand hand1, PlayerHand hand2)
+    {
+        List<PlayerHand> liveHands = new List<PlayerHand> { hand1, hand2 };
+
+        _probabilityCalculatorService = new ProbabilityCalculatorService(liveHands);
+
+        var handWinningFrequencies = _probabilityCalculatorService.CalculateWinningProbabilities(liveHands, new Board());
+        foreach(var frequency in handWinningFrequencies)
+        {
+            Console.WriteLine(frequency);
+        }
+    }
+
     public void TestKingsVersusQueens()
     {
         PlayerHand kings = new(
@@ -27,14 +40,36 @@ public class HeadsUpTests
             new Card(Suit.Club, Value.Q)
             );
 
-        List<PlayerHand> liveHands = new List<PlayerHand> { kings, queens };
+        TestAnyTwoHands(kings, queens);
+    }
 
-        _probabilityCalculatorService = new ProbabilityCalculatorService(liveHands);
+    public void TestAcesVsAK()
+    {
+        PlayerHand aces = new(
+            new Card(Suit.Diamond, Value.A),
+            new Card(Suit.Club, Value.A)
+            );
 
-        var handWinningFrequencies = _probabilityCalculatorService.CalculateWinningProbabilities(liveHands, new Board());
-        foreach(var frequency in handWinningFrequencies)
-        {
-            Console.WriteLine(frequency);
-        }
+        PlayerHand ak = new(
+            new Card(Suit.Spade, Value.A),
+            new Card(Suit.Club, Value.K)
+            );
+
+        TestAnyTwoHands(aces, ak);
+    }
+
+    public void TestAcesVsGarbage()
+    {
+        PlayerHand aces = new(
+            new Card(Suit.Diamond, Value.A),
+            new Card(Suit.Club, Value.A)
+            );
+
+        PlayerHand garbage = new(
+            new Card(Suit.Spade, Value.Num7),
+            new Card(Suit.Club, Value.Num2)
+            );
+
+        TestAnyTwoHands(aces, garbage);
     }
 }

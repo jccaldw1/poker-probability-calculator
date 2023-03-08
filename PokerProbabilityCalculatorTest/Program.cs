@@ -5,4 +5,4 @@ Console.WriteLine("Hello, World!");
 
 HeadsUpTests headsUpTests = new();
 
-headsUpTests.TestKingsVersusQueens();
+headsUpTests.TestAcesVsGarbage();
