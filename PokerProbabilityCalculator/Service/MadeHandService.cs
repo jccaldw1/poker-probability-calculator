@@ -108,6 +108,8 @@ public class MadeHandService
             bestPossibleHand = Hand.RoyalFlush;
         }
 
+        _cardsInPlay = cards;
+
         return RecursivelyDetermineHand(bestPossibleHand);
     }
 
@@ -377,7 +379,7 @@ public class MadeHandService
         Value threeOfAKindValue = threeOfAKindQuantities.First().Key;
 
         // A three of a kind has two kickers.
-        Stack<Card> cardsOutsideOfThreeOfAKind = (Stack<Card>)_cardsInPlay.Where(card => card.Value != threeOfAKindValue).OrderByDescending(card => card.Value);
+        Stack<Card> cardsOutsideOfThreeOfAKind = convertListToStack(_cardsInPlay.Where(card => card.Value != threeOfAKindValue).OrderByDescending(card => card.Value).ToList());
 
         possibleThreeOfAKind = new(Hand.ThreeOfAKind, threeOfAKindValue, cardsOutsideOfThreeOfAKind.Pop().Value, cardsOutsideOfThreeOfAKind.Pop().Value, null, null);
 
@@ -389,7 +391,7 @@ public class MadeHandService
         MadeHand? possibleTwoPair = null;
 
         // Get the values that have pairs. There can be up to three on a board of seven cards.
-        Stack<Value> pairs = (Stack<Value>)getValueQuantities().Where(valueQuantity => valueQuantity.Value == 2).Select(valueQuantity => valueQuantity.Key).OrderByDescending(value => value);
+        Stack<Value> pairs = convertListToStack(getValueQuantities().Where(valueQuantity => valueQuantity.Value == 2).Select(valueQuantity => valueQuantity.Key).OrderByDescending(value => value).ToList());
 
         if(pairs.Count() < 2)
         {
@@ -426,7 +428,7 @@ public class MadeHandService
         var onePairValue = pair.First();
 
         // One pair hand has three "kickers", the three remaining cards with the highest value.
-        Stack<Value> remainingCards = (Stack<Value>)_cardsInPlay.Where(card => card.Value != onePairValue).OrderByDescending(card => card.Value).Select(card => card.Value);
+        Stack<Value> remainingCards = convertListToStack(_cardsInPlay.Where(card => card.Value != onePairValue).OrderByDescending(card => card.Value).Select(card => card.Value).ToList());
 
         possibleOnePair = new(Hand.OnePair, onePairValue, remainingCards.Pop(), remainingCards.Pop(), remainingCards.Pop(), null);
 
@@ -496,5 +498,17 @@ public class MadeHandService
         }
 
         return suitFrequency;
+    }
+
+    private Stack<T> convertListToStack<T>(List<T> list)
+    {
+        Stack<T> stack = new();
+
+        foreach(var item in list)
+        {
+            stack.Push(item);
+        }
+
+        return stack;
     }
 }
