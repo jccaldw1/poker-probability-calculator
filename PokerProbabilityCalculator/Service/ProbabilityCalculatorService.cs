@@ -1,4 +1,5 @@
 ﻿using PokerProbabilityCalculator.Model;
+using System.Collections.Generic;
 
 namespace PokerProbabilityCalculator.Service;
 
@@ -8,7 +9,7 @@ public class ProbabilityCalculatorService
 
     private List<PlayerHand> playerHands;
 
-    private List<KeyValuePair<PlayerHand, int>> handWinningFrequencies;
+    private int[] handWinningQuantities;
 
     public ProbabilityCalculatorService(List<PlayerHand> playerHands)
     {
@@ -22,7 +23,7 @@ public class ProbabilityCalculatorService
             handWinningFrequencies.Add(new KeyValuePair<PlayerHand, int>(hand, 0));
         }
 
-        this.handWinningFrequencies = handWinningFrequencies;
+        this.handWinningQuantities = new int[playerHands.Count];
 
         madeHandService = new MadeHandService();
     }
@@ -58,17 +59,19 @@ public class ProbabilityCalculatorService
             List<PlayerHand> winningHands = playerHandMadeHandAssociation.Where(kvp => kvp.Value == bestMadeHand).Select(kvp => kvp.Key).ToList();
 
             // Add 1 to each of the hand winning frequencies for the winning hand.
+            List<int> indicesOfWinningHands = new();
 
-            // Get all the hand frequency rows for the winning hand. We need to update these values by 1, so we have to keep track of them.
-            var handWinningFrequenciesToUpdate = handWinningFrequencies.Where(kvp => winningHands.Contains(kvp.Key)).ToList();
-
-            // Remove the hand frequency rows so we can update them.
-            handWinningFrequencies.RemoveAll(kvp => winningHands.Contains(kvp.Key));
-
-            // Add back the hand frequency row with the extra frequency.
-            foreach(var handWinningFrequency in handWinningFrequenciesToUpdate)
+            foreach(PlayerHand hand in liveHands)
             {
-                handWinningFrequencies.Add(new KeyValuePair<PlayerHand, int>(handWinningFrequency.Key, handWinningFrequency.Value + 1));
+                if (winningHands.Contains(hand))
+                {
+                    indicesOfWinningHands.Add(liveHands.IndexOf(hand));
+                }
+            }
+
+            foreach(int index in indicesOfWinningHands)
+            {
+                handWinningQuantities[index] += 1;
             }
         }
         // Recursive step
@@ -86,6 +89,13 @@ public class ProbabilityCalculatorService
 
                 CalculateWinningProbabilities(liveHands, newBoard);
             }
+        }
+
+        List<KeyValuePair<PlayerHand, int>> handWinningFrequencies = new();
+
+        for(int i = 0; i < handWinningQuantities.Length; i++)
+        {
+            handWinningFrequencies.Add(new KeyValuePair<PlayerHand, int>(liveHands.ElementAt(i), handWinningQuantities[i]));
         }
 
         return handWinningFrequencies;
