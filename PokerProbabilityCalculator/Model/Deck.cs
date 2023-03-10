@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace PokerProbabilityCalculator.Model;
+﻿namespace PokerProbabilityCalculator.Model;
 
 public class Deck
 {
@@ -26,25 +19,10 @@ public class Deck
         Shuffle();
     }
 
-    /// <summary>
-    /// Remove some cards from the deck.
-    /// </summary>
-    //public bool RemoveCards(List<Card> cardsToRemove)
-    //{
-    //    bool cardsCouldBeRemoved = true;
-
-    //    foreach(Card card in cardsToRemove)
-    //    {
-    //        cardsCouldBeRemoved &= cards.Remove(card);
-    //    }
-
-    //    return cardsCouldBeRemoved;
-    //}
-
-    //public bool RemoveCards(Card cardToRemove)
-    //{
-    //    return cards.Remove(cardToRemove);
-    //}
+    public bool RemoveCard(Card cardToRemove)
+    {
+        return cards.Remove(cardToRemove);
+    }
 
     private void Shuffle()
     {

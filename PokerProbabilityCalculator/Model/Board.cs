@@ -2,7 +2,9 @@
 
 public class Board
 {
-    public Flop? Flop { get; set; } = null;
+    public Card? Flop1 { get; set; } = null;
+    public Card? Flop2 { get; set; } = null;
+    public Card? Flop3 { get; set; } = null;
     public Card? Turn { get; set; } = null;
     public Card? River { get; set; } = null;
 
@@ -10,11 +12,19 @@ public class Board
     {
         List<Card> cardsOnBoard = new List<Card>();
 
-        if(Flop != null)
+        if(Flop1 != null)
         {
-            cardsOnBoard.Add(Flop.Card1);
-            cardsOnBoard.Add(Flop.Card2);
-            cardsOnBoard.Add(Flop.Card3);
+            cardsOnBoard.Add(Flop1);
+        }
+
+        if(Flop2 != null)
+        {
+            cardsOnBoard.Add(Flop2);
+        }
+
+        if(Flop3 != null)
+        {
+            cardsOnBoard.Add(Flop3);
         }
 
         if(Turn != null)
@@ -34,18 +44,17 @@ public class Board
     // TODO: If a card cannot be played, this method silently fails.
     public Board PlayCardOnBoard(Card cardToPlay)
     {
-        if(Flop == null)
+        if(Flop1 == null)
         {
-            Flop = new Flop();
-            Flop.Card1 = cardToPlay;
+            Flop1 = cardToPlay;
         }
-        else if (Flop.Card2 == null)
+        else if(Flop2 == null)
         {
-            Flop.Card2 = cardToPlay;
+            Flop2 = cardToPlay;
         }
-        else if (Flop.Card3 == null)
+        else if(Flop3 == null)
         {
-            Flop.Card3 = cardToPlay;
+            Flop3 = cardToPlay;
         }
         else if (Turn == null)
         {
@@ -54,6 +63,10 @@ public class Board
         else if (River == null)
         {
             River = cardToPlay;
+        }
+        else
+        {
+            throw new Exception("Cannot play cards on a full board");
         }
 
         return this;

@@ -23,7 +23,7 @@ public class ProbabilityCalculatorService
             handWinningFrequencies.Add(new KeyValuePair<PlayerHand, int>(hand, 0));
         }
 
-        this.handWinningQuantities = new int[playerHands.Count];
+        handWinningQuantities = new int[playerHands.Count];
 
         madeHandService = new MadeHandService();
     }
@@ -32,13 +32,30 @@ public class ProbabilityCalculatorService
     {
         // For each remaining card in the deck, examine each live hand to see which hand that card helps. Keep a running count for each live hand of numbers of cards that favor them.
 
-        // Get all the cards that remain in the deck given the cards that have been played.
-        Deck deck = constructDeckGivenPlayedCards(liveHands, currentBoard);
 
         // Run out the board if possible. Examine each five card board and determine which live hand wins.
         // Base step
         if(currentBoard.GetCards().Count == 5)
         {
+            Console.WriteLine("base;");
+            //Console.WriteLine("Cards in deck is: " + deck.cards.Count);
+            //if (deck.cards.Count == 44)
+            //{
+            //    Console.WriteLine("Board: ");
+            //    foreach (Card card in currentBoard.GetCards())
+            //    {
+            //        Console.WriteLine(card);
+            //    }
+            //    Console.WriteLine("\n");
+            //    Console.WriteLine("\n");
+            //    Console.WriteLine("\n");
+            //    foreach (Card card in deck.cards)
+            //    {
+            //        Console.WriteLine(card);
+            //    }
+            //    //throw new Exception("stopping");
+            //}
+
             List<MadeHand> madeHands = new();
 
             // Keep track of the made hands that the player's hands make.
@@ -73,19 +90,42 @@ public class ProbabilityCalculatorService
             {
                 handWinningQuantities[index] += 1;
             }
+            foreach(Card card in currentBoard.GetCards())
+            {
+                Console.Write(card.ToString() + "; ");
+            }
         }
         // Recursive step
         else
         {
+            // Get all the cards that remain in the deck given the cards that have been played.
+            Deck deck = constructDeckGivenPlayedCards(liveHands, currentBoard);
+
             foreach(Card card in deck.cards)
             {
                 //Console.WriteLine("Card to add: " + card);
                 Board newBoard = new Board();
-                newBoard.Flop = currentBoard.Flop;
+
+                newBoard.Flop1 = currentBoard.Flop1;
+                newBoard.Flop2 = currentBoard.Flop2;
+                newBoard.Flop3 = currentBoard.Flop3;
                 newBoard.Turn = currentBoard.Turn;
                 newBoard.River = currentBoard.River;
 
+                List<Card> liveCards = currentBoard.GetCards();
+                foreach(PlayerHand hand in liveHands)
+                {
+                    liveCards.Add(hand.Card1);
+                    liveCards.Add(hand.Card2);
+                }
+
+                if (liveCards.Contains(card))
+                {
+                    throw new Exception("Hey, you're adding a card that's already in play.");
+                }
+
                 newBoard.PlayCardOnBoard(card);
+
 
                 CalculateWinningProbabilities(liveHands, newBoard);
             }
@@ -103,14 +143,24 @@ public class ProbabilityCalculatorService
 
     private Deck constructDeckGivenPlayedCards(List<PlayerHand> liveHands, Board currentBoard)
     {
+        Console.WriteLine("Constructdeck");
         Deck deck = new();
+        List<Card> liveCards = new();
 
-        deck.cards.RemoveAll(card => currentBoard.GetCards().Contains(card));
+        foreach(Card card in currentBoard.GetCards())
+        {
+            liveCards.Add(card);
+        }
 
         foreach (PlayerHand hand in liveHands)
         {
-            deck.cards.Remove(hand.Card1);
-            deck.cards.Remove(hand.Card2);
+            liveCards.Add(hand.Card1);
+            liveCards.Add(hand.Card2);
+        }
+
+        foreach(Card card in liveCards)
+        {
+            deck.RemoveCard(card);
         }
 
         return deck;
