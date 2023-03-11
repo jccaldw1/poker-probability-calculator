@@ -10,22 +10,30 @@ public class HeadsUpTests
 {
     private ProbabilityCalculatorService _probabilityCalculatorService;
 
+    private MadeHandService _madeHandService;
+
     public void RunAllTests()
     {
 
     }
 
-    private void TestAnyTwoHands(PlayerHand hand1, PlayerHand hand2)
+    private void TestAnyTwoHands(PlayerHand hand1, PlayerHand hand2, Board board)
     {
         List<PlayerHand> liveHands = new List<PlayerHand> { hand1, hand2 };
 
         _probabilityCalculatorService = new ProbabilityCalculatorService(liveHands);
 
-        var handWinningFrequencies = _probabilityCalculatorService.CalculateWinningProbabilities(liveHands, new Board());
+        var handWinningFrequencies = _probabilityCalculatorService.CalculateWinningProbabilities(liveHands, board);
+
         foreach(var frequency in handWinningFrequencies)
         {
             Console.WriteLine(frequency);
         }
+    }
+
+    private void TestAnyTwoHands(PlayerHand hand1, PlayerHand hand2)
+    {
+        TestAnyTwoHands(hand1, hand2, new Board());
     }
 
     public void TestKingsVersusQueens()
