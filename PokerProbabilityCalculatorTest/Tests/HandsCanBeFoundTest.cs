@@ -3,11 +3,31 @@ using PokerProbabilityCalculator.Service;
 
 namespace PokerProbabilityCalculatorTest.Tests
 {
-    public class HandsCanBeFoundTest
+    public class HandsCanBeFoundTest : Test
     {
         private MadeHandService _madeHandService;
 
-        public void TestRoyalFlushCanBeFound()
+        public bool RunAllTests()
+        {
+            return
+                TestRoyalFlushCanBeFound() &&
+                TestStraightFlushCanBeFound() &&
+                TestFourOfAKindCanBeFound() &&
+                TestFullHouseCanBeFound() &&
+                TestFullHouseCanBeFoundWithTwoThreesOfAKind() &&
+                TestFlushCanBeFound() &&
+                TestBoardFlush() &&
+                TestBoardFlushWithBetterFlushInHand() &&
+                TestStraightCanBeFound() &&
+                TestSixCardStraightCanBeFound() &&
+                TestSevenCardStraightCanBeFound() &&
+                TestThreeOfAKindCanBeFound() &&
+                TestTwoPairCanBeFound() &&
+                TestOnePairCanBeFound() &&
+                TestHighCardCanBeFound();
+        }
+
+        public bool TestRoyalFlushCanBeFound()
         {
             PlayerHand hand = new(new Card(Suit.Diamond, Value.A), new Card(Suit.Club, Value.Num2));
 
@@ -18,9 +38,11 @@ namespace PokerProbabilityCalculatorTest.Tests
             board.Turn = new Card(Suit.Diamond, Value.J);
             board.River = new Card(Suit.Diamond, Value.Num9);
 
-            DetermineMadeHand(hand, board);
+            var madeHand = DetermineMadeHand(hand, board);
+
+            return madeHand.Hand == Hand.RoyalFlush;
         }
-        public void TestStraightFlushCanBeFound()
+        public bool TestStraightFlushCanBeFound()
         {
             PlayerHand hand = new(new Card(Suit.Diamond, Value.Num9), new Card(Suit.Club, Value.Num2));
 
@@ -31,10 +53,12 @@ namespace PokerProbabilityCalculatorTest.Tests
             board.Turn = new Card(Suit.Diamond, Value.J);
             board.River = new Card(Suit.Spade, Value.Num8);
 
-            DetermineMadeHand(hand, board);
+            var madeHand = DetermineMadeHand(hand, board);
+
+            return madeHand.Hand == Hand.StraightFlush && madeHand.Value == Value.K;
         }
 
-        public void TestFourOfAKindCanBeFound()
+        public bool TestFourOfAKindCanBeFound()
         {
             PlayerHand hand = new(new Card(Suit.Diamond, Value.Num4), new Card(Suit.Heart, Value.Num4));
 
@@ -47,9 +71,12 @@ namespace PokerProbabilityCalculatorTest.Tests
                 River = new(Suit.Spade, Value.Num7)
             };
 
-            DetermineMadeHand(hand, board);
+            var madeHand = DetermineMadeHand(hand, board);
+
+            return madeHand.Hand == Hand.FourOfAKind && madeHand.Value == Value.Num4;
         }
-        public void TestFullHouseCanBeFound()
+
+        public bool TestFullHouseCanBeFound()
         {
             PlayerHand hand = new(new Card(Suit.Diamond, Value.Num4), new Card(Suit.Heart, Value.Num4));
 
@@ -62,10 +89,12 @@ namespace PokerProbabilityCalculatorTest.Tests
                 River = new(Suit.Spade, Value.Num7)
             };
 
-            DetermineMadeHand(hand, board);
+            var madeHand = DetermineMadeHand(hand, board);
+
+            return madeHand.Hand == Hand.FullHouse && madeHand.Value == Value.Num7 && madeHand.Value2 == Value.Num4;
         }
 
-        public void TestFullHouseCanBeFoundWithTwoThreesOfAKind()
+        public bool TestFullHouseCanBeFoundWithTwoThreesOfAKind()
         {
             PlayerHand hand = new(new Card(Suit.Diamond, Value.Num4), new Card(Suit.Heart, Value.Num4));
 
@@ -78,10 +107,12 @@ namespace PokerProbabilityCalculatorTest.Tests
                 River = new(Suit.Spade, Value.Num7)
             };
 
-            DetermineMadeHand(hand, board);
+            var madeHand = DetermineMadeHand(hand, board);
+
+            return madeHand.Hand == Hand.FullHouse && madeHand.Value == Value.Num7 && madeHand.Value2 == Value.Num4;
         }
 
-        public void TestFlushCanBeFound()
+        public bool TestFlushCanBeFound()
         {
             PlayerHand hand = new(new Card(Suit.Diamond, Value.Num4), new Card(Suit.Diamond, Value.Num5));
 
@@ -94,10 +125,12 @@ namespace PokerProbabilityCalculatorTest.Tests
                 River = new(Suit.Spade, Value.Num7)
             };
 
-            DetermineMadeHand(hand, board);
+            var madeHand = DetermineMadeHand(hand, board);
+
+            return madeHand.Hand == Hand.Flush && madeHand.Value == Value.Q && madeHand.Value2 == Value.J && madeHand.Value3 == Value.Num7 && madeHand.Value4 == Value.Num5 && madeHand.Value5 == Value.Num4;
         }
 
-        public void TestBoardFlush()
+        public bool TestBoardFlush()
         {
             PlayerHand hand = new(new Card(Suit.Diamond, Value.Num4), new Card(Suit.Diamond, Value.Num5));
 
@@ -110,10 +143,12 @@ namespace PokerProbabilityCalculatorTest.Tests
                 River = new(Suit.Diamond, Value.K)
             };
 
-            DetermineMadeHand(hand, board);
+            var madeHand = DetermineMadeHand(hand, board);
+
+            return madeHand.Hand == Hand.Flush && madeHand.Value == Value.K && madeHand.Value2 == Value.Q && madeHand.Value3 == Value.J && madeHand.Value4 == Value.Num10 && madeHand.Value5 == Value.Num7;
         }
 
-        public void TestBoardFlushWithBetterFlushInHand()
+        public bool TestBoardFlushWithBetterFlushInHand()
         {
             PlayerHand hand = new(new Card(Suit.Diamond, Value.Num9), new Card(Suit.Diamond, Value.Num5));
 
@@ -126,10 +161,12 @@ namespace PokerProbabilityCalculatorTest.Tests
                 River = new(Suit.Diamond, Value.Num2)
             };
 
-            DetermineMadeHand(hand, board);
+            var madeHand = DetermineMadeHand(hand, board);
+
+            return madeHand.Hand == Hand.Flush && madeHand.Value == Value.Q && madeHand.Value2 == Value.J && madeHand.Value3 == Value.Num10 && madeHand.Value4 == Value.Num9 && madeHand.Value5 == Value.Num7;
         }
 
-        public void TestStraightCanBeFound()
+        public bool TestStraightCanBeFound()
         {
             PlayerHand hand = new(new Card(Suit.Diamond, Value.Num5), new Card(Suit.Diamond, Value.Num7));
 
@@ -142,10 +179,12 @@ namespace PokerProbabilityCalculatorTest.Tests
                 River = new(Suit.Diamond, Value.K)
             };
 
-            DetermineMadeHand(hand, board);
+            var madeHand = DetermineMadeHand(hand, board);
+
+            return madeHand.Hand == Hand.Straight && madeHand.Value == Value.Num8;
         }
 
-        public void TestSixCardStraightCanBeFound()
+        public bool TestSixCardStraightCanBeFound()
         {
             PlayerHand hand = new(new Card(Suit.Diamond, Value.Num5), new Card(Suit.Diamond, Value.Num7));
 
@@ -158,10 +197,12 @@ namespace PokerProbabilityCalculatorTest.Tests
                 River = new(Suit.Diamond, Value.K)
             };
 
-            DetermineMadeHand(hand, board);
+            var madeHand = DetermineMadeHand(hand, board);
+
+            return madeHand.Hand == Hand.Straight && madeHand.Value == Value.Num8;
         }
 
-        public void TestSevenCardStraightCanBeFound()
+        public bool TestSevenCardStraightCanBeFound()
         {
             PlayerHand hand = new(new Card(Suit.Diamond, Value.Num5), new Card(Suit.Diamond, Value.Num7));
 
@@ -174,10 +215,12 @@ namespace PokerProbabilityCalculatorTest.Tests
                 River = new(Suit.Diamond, Value.Num9)
             };
 
-            DetermineMadeHand(hand, board);
+            var madeHand = DetermineMadeHand(hand, board);
+
+            return madeHand.Hand == Hand.Straight && madeHand.Value == Value.Num9;
         }
 
-        public void TestThreeOfAKindCanBeFound()
+        public bool TestThreeOfAKindCanBeFound()
         {
             PlayerHand hand = new(new Card(Suit.Diamond, Value.Num5), new Card(Suit.Club, Value.Num5));
 
@@ -190,10 +233,12 @@ namespace PokerProbabilityCalculatorTest.Tests
                 River = new(Suit.Diamond, Value.Num9)
             };
 
-            DetermineMadeHand(hand, board);
+            var madeHand = DetermineMadeHand(hand, board);
+
+            return madeHand.Hand == Hand.ThreeOfAKind && madeHand.Value == Value.Num5 && madeHand.Value2 == Value.Num9 && madeHand.Value3 == Value.Num8;
         }
 
-        public void TestTwoPairCanBeFound()
+        public bool TestTwoPairCanBeFound()
         {
             PlayerHand hand = new(new Card(Suit.Diamond, Value.Num5), new Card(Suit.Club, Value.Num5));
 
@@ -206,10 +251,12 @@ namespace PokerProbabilityCalculatorTest.Tests
                 River = new(Suit.Diamond, Value.Num9)
             };
 
-            DetermineMadeHand(hand, board);
+            var madeHand = DetermineMadeHand(hand, board);
+
+            return madeHand.Hand == Hand.TwoPair && madeHand.Value == Value.Num6 && madeHand.Value2 == Value.Num5 && madeHand.Value3 == Value.Num9;
         }
 
-        public void TestOnePairCanBeFound()
+        public bool TestOnePairCanBeFound()
         {
             PlayerHand hand = new(new Card(Suit.Diamond, Value.Num5), new Card(Suit.Club, Value.Num5));
 
@@ -222,10 +269,12 @@ namespace PokerProbabilityCalculatorTest.Tests
                 River = new(Suit.Diamond, Value.Num9)
             };
 
-            DetermineMadeHand(hand, board);
+            var madeHand = DetermineMadeHand(hand, board);
+
+            return madeHand.Hand == Hand.OnePair && madeHand.Value == Value.Num5 && madeHand.Value2 == Value.J && madeHand.Value3 == Value.Num9 && madeHand.Value4 == Value.Num8;
         }
 
-        public void TestHighCardCanBeFound()
+        public bool TestHighCardCanBeFound()
         {
             PlayerHand hand = new(new Card(Suit.Diamond, Value.A), new Card(Suit.Diamond, Value.K));
 
@@ -234,20 +283,24 @@ namespace PokerProbabilityCalculatorTest.Tests
                 Flop1 = new(Suit.Diamond, Value.Num2),
                 Flop2 = new(Suit.Spade, Value.Num3),
                 Flop3 = new(Suit.Club, Value.Num4),
-                Turn = new(Suit.Heart, Value.Num5),
+                Turn = new(Suit.Heart, Value.Num6),
                 River = new(Suit.Diamond, Value.Num7)
             };
 
-            DetermineMadeHand(hand, board);
+            var madeHand = DetermineMadeHand(hand, board);
 
+            return madeHand.Hand == Hand.HighCard && madeHand.Value == Value.A && madeHand.Value2 == Value.K && madeHand.Value3 == Value.Num7 && madeHand.Value4 == Value.Num6 && madeHand.Value5 == Value.Num4;
         }
 
-        private void DetermineMadeHand(PlayerHand hand, Board board)
+        private MadeHand DetermineMadeHand(PlayerHand hand, Board board)
         {
             _madeHandService = new MadeHandService(hand, board);
 
             var madeHand = _madeHandService.DetermineMadeHand();
+
             Console.WriteLine(madeHand);
+
+            return madeHand;
         }
 
 

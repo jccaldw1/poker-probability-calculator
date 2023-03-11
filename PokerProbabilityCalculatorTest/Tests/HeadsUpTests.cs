@@ -6,15 +6,15 @@ namespace PokerProbabilityCalculatorTest.Tests;
 /// <summary>
 /// Tests for poker hands consisting of two players (that is, poker hands "heads up").
 /// </summary>
-public class HeadsUpTests
+public class HeadsUpTests : Test
 {
     private ProbabilityCalculatorService _probabilityCalculatorService;
 
     private MadeHandService _madeHandService;
 
-    public void RunAllTests()
+    public bool RunAllTests()
     {
-
+        return true;
     }
 
     private void TestAnyTwoHands(PlayerHand hand1, PlayerHand hand2, Board board)

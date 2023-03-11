@@ -5,4 +5,8 @@ Console.WriteLine("Hello, World!");
 
 HeadsUpTests headsUpTests = new();
 
-headsUpTests.TestAcesVsGarbage();
+HandsCanBeFoundTest handsCanBeFoundTest = new();
+
+bool testResult = handsCanBeFoundTest.RunAllTests();
+
+Console.WriteLine(testResult);
