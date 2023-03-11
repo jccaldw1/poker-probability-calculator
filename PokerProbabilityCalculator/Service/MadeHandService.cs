@@ -40,14 +40,14 @@ public class MadeHandService
         // We start with the lowest possible hand - if we see any hands better, replace it.
         MadeHand bestMadeHand = new(Hand.HighCard, Value.Num7, Value.Num6, Value.Num5, Value.Num4, Value.Num2);
 
-        foreach(MadeHand hand in madeHands)
+        foreach (MadeHand hand in madeHands)
         {
             // The hand enum goes from least to greatest (High Card = 0, Royal Flush = 9), so this comparison is good.
-            if(hand.Hand > bestMadeHand.Hand)
+            if (hand.Hand > bestMadeHand.Hand)
             {
                 bestMadeHand = hand;
             }
-            else if(hand.Hand == bestMadeHand.Hand)
+            else if (hand.Hand == bestMadeHand.Hand)
             {
                 // Compare the values of the two hands.
                 if (hand.Value > bestMadeHand.Value)
@@ -97,9 +97,10 @@ public class MadeHandService
             playerHand.Card1,
             playerHand.Card2
         };
+
         cards.AddRange(board.GetCards());
 
-        if(cards.Count == 2)
+        if (cards.Count == 2)
         {
             bestPossibleHand = Hand.OnePair;
         }
@@ -119,7 +120,7 @@ public class MadeHandService
     private MadeHand RecursivelyDetermineHand(Hand hand)
     {
         MadeHand? handResult = DetermineMadeHand(hand);
-        if(handResult == null)
+        if (handResult == null)
         {
             return RecursivelyDetermineHand((Hand)((int)hand - 1));
         }
@@ -131,7 +132,7 @@ public class MadeHandService
 
     private MadeHand? DetermineMadeHand(Hand supposedHand)
     {
-        switch(supposedHand)
+        switch (supposedHand)
         {
             case Hand.RoyalFlush:
                 return PlayerHasRoyalFlush();
@@ -166,23 +167,23 @@ public class MadeHandService
         MadeHand? possibleStraight = PlayerHasStraight();
 
         // The ace high flush is a necessary condition for a royal flush.
-        if(possibleFlush == null || possibleFlush.Value != Value.A)
+        if (possibleFlush == null || possibleFlush.Value != Value.A)
         {
             return possibleRoyalFlush;
         }
 
         // The ace high straight is a necessary condition for a royal flush.
-        if(possibleStraight == null || possibleStraight.Value != Value.A)
+        if (possibleStraight == null || possibleStraight.Value != Value.A)
         {
             return possibleRoyalFlush;
         }
-        
+
         Suit flushSuit = getSuitQuantities().Where(suitQuantity => suitQuantity.Value >= 5).First().Key;
 
         // All the cards in the ace high straight.
         List<Value> broadwayValues = new List<Value>() { Value.Num10, Value.J, Value.Q, Value.K, Value.A };
 
-        if(
+        if (
             _cardsInPlay
                 // We know the player has the ace high straight, so this first filter will give at least five results.
                 .Where(card => broadwayValues.Contains(card.Value))
@@ -206,7 +207,7 @@ public class MadeHandService
         MadeHand? possibleFlush = PlayerHasFlush();
 
         // A straight is a necessary condition for having a straight flush, as is a flush.
-        if(possibleStraight == null || possibleFlush == null)
+        if (possibleStraight == null || possibleFlush == null)
         {
             return possibleStraightFlush;
         }
@@ -214,9 +215,9 @@ public class MadeHandService
         Suit flushSuit = getSuitQuantities().Where(suitQuantity => suitQuantity.Value >= 5).First().Key;
 
         // Iterate through the straight values. If any of them are not the flush suit, then the player does not have a straight flush.
-        for(int i = (int)possibleStraight.Value; i > (int)possibleStraight.Value - 4; i--)
+        for (int i = (int)possibleStraight.Value; i > (int)possibleStraight.Value - 4; i--)
         {
-            if(!_cardsInPlay.Where(card => card.Value == (Value)i).Any(card => card.Suit == flushSuit))
+            if (!_cardsInPlay.Where(card => card.Value == (Value)i).Any(card => card.Suit == flushSuit))
             {
                 return possibleStraightFlush;
             }
@@ -235,7 +236,7 @@ public class MadeHandService
 
         bool playerHasFourOfAKind = fourOfAKind.Any();
 
-        if(!playerHasFourOfAKind)
+        if (!playerHasFourOfAKind)
         {
             return possibleFourOfAKind;
         }
@@ -259,15 +260,15 @@ public class MadeHandService
         List<Value> valuesWithThreeOccurrences = new List<Value>();
         List<Value> valuesWithTwoOccurrences = new List<Value>();
 
-        foreach(KeyValuePair<Value, int> valueQuantity in valueQuantities)
+        foreach (KeyValuePair<Value, int> valueQuantity in valueQuantities)
         {
-            if(valueQuantity.Value == 3)
+            if (valueQuantity.Value == 3)
                 valuesWithThreeOccurrences.Add(valueQuantity.Key);
-            else if(valueQuantity.Value == 2)
+            else if (valueQuantity.Value == 2)
                 valuesWithTwoOccurrences.Add(valueQuantity.Key);
         }
 
-        if(valuesWithThreeOccurrences.Count() == 1 && valuesWithTwoOccurrences.Count() >= 1)
+        if (valuesWithThreeOccurrences.Count() == 1 && valuesWithTwoOccurrences.Count() >= 1)
         {
             possibleFullHouse = new MadeHand(
                 Hand.FullHouse,
@@ -278,14 +279,15 @@ public class MadeHandService
                 null,
                 null
                 );
-        } 
+        }
         // Full houses can happen when there are two threes of a kind in play.
-        else if(valuesWithThreeOccurrences.Count() == 2)
+        else if (valuesWithThreeOccurrences.Count() == 2)
         {
             IOrderedEnumerable<Value> orderedValues = valuesWithThreeOccurrences.OrderByDescending(value => value);
 
             possibleFullHouse = new MadeHand(
                 Hand.FullHouse,
+                // There can be no more than two threes of a kind in play, so first and last are safe ways to find them.
                 orderedValues.First(),
                 orderedValues.Last(),
                 null,
@@ -304,24 +306,26 @@ public class MadeHandService
         IEnumerable<Suit> flushSuits = getSuitQuantities().Where(suitQuantity => suitQuantity.Value >= 5).Select(suitQuantity => suitQuantity.Key).ToList();
 
         // If any of the suits occur five or more times:
-        if(flushSuits.Any())
+        if (flushSuits.Any())
         {
             Suit flushSuit = flushSuits.First();
 
-            IOrderedEnumerable<Card> orderedCardsInFlushSuit = _cardsInPlay.Where(card => card.Suit == flushSuit).OrderByDescending(card => card.Value);
+            List<Card> orderedCardsInFlushSuit = _cardsInPlay.Where(card => card.Suit == flushSuit).OrderBy(card => card.Value).ToList();
+
             Value highestFlushCardValue = orderedCardsInFlushSuit.First().Value;
 
             Stack<Card> stackedCardsInFlushSuit = convertListToStack(orderedCardsInFlushSuit.ToList());
 
             // Two flushes can be identical except for the smallest card. The higher flush wins, so all Values must be issued.
             possibleFlush = new(
-                Hand.Flush, 
+                Hand.Flush,
                 // We pop sequentially to get the values of the flush.
                 stackedCardsInFlushSuit.Pop().Value,
                 stackedCardsInFlushSuit.Pop().Value,
                 stackedCardsInFlushSuit.Pop().Value,
                 stackedCardsInFlushSuit.Pop().Value,
-                stackedCardsInFlushSuit.Pop().Value);
+                stackedCardsInFlushSuit.Pop().Value
+            );
 
             return possibleFlush;
 
@@ -334,18 +338,18 @@ public class MadeHandService
     {
         MadeHand? possibleStraight = null;
 
-        IOrderedEnumerable<Card> cardsInAscendingOrder = _cardsInPlay.OrderBy(card => card.Value);
+        List<Card> cardsInAscendingOrder = _cardsInPlay.OrderBy(card => card.Value).ToList();
 
         List<Value> cardValues = getCardValues();
 
         // Run once if there are five cards in play, twice if there are six, and three times if there are seven.
         // This is the number of possible straights given the number of cards in play.
         // This loop starts at 2, 1, or 0 depending on if there are 7, 6, or 5 cards in play. This is so it finds the highest possible straight first.
-        for (int i = _cardsInPlay.Count - 5; i <= 0; i--)
+        for (int i = _cardsInPlay.Count - 5; i >= 0; i--)
         {
             Value bottomCardValue = cardsInAscendingOrder.ElementAt(i).Value;
 
-            if(cardValues.Contains(bottomCardValue)
+            if (cardValues.Contains(bottomCardValue)
                                 && cardValues.Contains((Value)((int)bottomCardValue + 1))
                                 && cardValues.Contains((Value)((int)bottomCardValue + 2))
                                 && cardValues.Contains((Value)((int)bottomCardValue + 3))
@@ -359,6 +363,9 @@ public class MadeHandService
                     null,
                     null,
                     null);
+
+                // Once the highest possible straight is found, break out.
+                break;
             }
         }
 
@@ -372,7 +379,7 @@ public class MadeHandService
         // By this point, since we have checked for a full house, we can be certain there is only one three of a kind in play, if any.
         var threeOfAKindQuantities = getValueQuantities().Where(valueQuantity => valueQuantity.Value == 3);
 
-        if(threeOfAKindQuantities.Count() != 1)
+        if (threeOfAKindQuantities.Count() != 1)
         {
             return possibleThreeOfAKind;
         }
@@ -380,7 +387,7 @@ public class MadeHandService
         Value threeOfAKindValue = threeOfAKindQuantities.First().Key;
 
         // A three of a kind has two kickers.
-        Stack<Card> cardsOutsideOfThreeOfAKind = convertListToStack(_cardsInPlay.Where(card => card.Value != threeOfAKindValue).OrderByDescending(card => card.Value).ToList());
+        Stack<Card> cardsOutsideOfThreeOfAKind = convertListToStack(_cardsInPlay.Where(card => card.Value != threeOfAKindValue).OrderBy(card => card.Value).ToList());
 
         possibleThreeOfAKind = new(Hand.ThreeOfAKind, threeOfAKindValue, cardsOutsideOfThreeOfAKind.Pop().Value, cardsOutsideOfThreeOfAKind.Pop().Value, null, null);
 
@@ -392,9 +399,9 @@ public class MadeHandService
         MadeHand? possibleTwoPair = null;
 
         // Get the values that have pairs. There can be up to three on a board of seven cards.
-        Stack<Value> pairs = convertListToStack(getValueQuantities().Where(valueQuantity => valueQuantity.Value == 2).Select(valueQuantity => valueQuantity.Key).OrderByDescending(value => value).ToList());
+        Stack<Value> pairs = convertListToStack(getValueQuantities().Where(valueQuantity => valueQuantity.Value == 2).Select(valueQuantity => valueQuantity.Key).OrderBy(value => value).ToList());
 
-        if(pairs.Count() < 2)
+        if (pairs.Count() < 2)
         {
             return possibleTwoPair;
         }
@@ -414,7 +421,7 @@ public class MadeHandService
         possibleTwoPair = new(Hand.TwoPair, twoPairValue1, twoPairValue2, highestCardNotInTwoPair, null, null);
 
         return possibleTwoPair;
-   }
+    }
 
     private MadeHand? PlayerHasOnePair()
     {
@@ -429,7 +436,7 @@ public class MadeHandService
         var onePairValue = pair.First();
 
         // One pair hand has three "kickers", the three remaining cards with the highest value.
-        Stack<Value> remainingCards = convertListToStack(_cardsInPlay.Where(card => card.Value != onePairValue).OrderByDescending(card => card.Value).Select(card => card.Value).ToList());
+        Stack<Value> remainingCards = convertListToStack(_cardsInPlay.Where(card => card.Value != onePairValue).OrderBy(card => card.Value).Select(card => card.Value).ToList());
 
         possibleOnePair = new(Hand.OnePair, onePairValue, remainingCards.Pop(), remainingCards.Pop(), remainingCards.Pop(), null);
 
@@ -440,7 +447,7 @@ public class MadeHandService
     {
         // By this point, we are certain that the player only has a high card. So we can simply sort the cards in play to get the player's hand.
 
-        Stack<Card> fiveHighestCards = convertListToStack(_cardsInPlay.OrderByDescending(card => card.Value).Take(5).ToList());
+        Stack<Card> fiveHighestCards = convertListToStack(_cardsInPlay.OrderBy(card => card.Value).ToList());
 
         MadeHand highCard = new(Hand.HighCard, fiveHighestCards.Pop().Value, fiveHighestCards.Pop().Value, fiveHighestCards.Pop().Value, fiveHighestCards.Pop().Value, fiveHighestCards.Pop().Value);
 
@@ -463,7 +470,7 @@ public class MadeHandService
     {
         Dictionary<Value, int> valueFrequency = new();
 
-        foreach(Card card in _cardsInPlay)
+        foreach (Card card in _cardsInPlay)
         {
             if (valueFrequency.ContainsKey(card.Value))
             {
@@ -486,7 +493,7 @@ public class MadeHandService
     {
         Dictionary<Suit, int> suitFrequency = new();
 
-        foreach(Card card in _cardsInPlay)
+        foreach (Card card in _cardsInPlay)
         {
             if (suitFrequency.ContainsKey(card.Suit))
             {
@@ -505,7 +512,7 @@ public class MadeHandService
     {
         Stack<T> stack = new();
 
-        foreach(var item in list)
+        foreach (var item in list)
         {
             stack.Push(item);
         }
