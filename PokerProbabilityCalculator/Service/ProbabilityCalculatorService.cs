@@ -10,6 +10,8 @@ public class ProbabilityCalculatorService
     private List<PlayerHand> playerHands;
 
     private int[] handWinningQuantities;
+    private int ties;
+    private List<Board> tiedBoards = new();
 
     public ProbabilityCalculatorService(List<PlayerHand> playerHands)
     {
@@ -25,6 +27,8 @@ public class ProbabilityCalculatorService
 
         handWinningQuantities = new int[playerHands.Count];
 
+        ties = 0;
+
         madeHandService = new MadeHandService();
     }
 
@@ -37,25 +41,6 @@ public class ProbabilityCalculatorService
         // Base step
         if(currentBoard.GetCards().Count == 5)
         {
-            Console.WriteLine("base;");
-            //Console.WriteLine("Cards in deck is: " + deck.cards.Count);
-            //if (deck.cards.Count == 44)
-            //{
-            //    Console.WriteLine("Board: ");
-            //    foreach (Card card in currentBoard.GetCards())
-            //    {
-            //        Console.WriteLine(card);
-            //    }
-            //    Console.WriteLine("\n");
-            //    Console.WriteLine("\n");
-            //    Console.WriteLine("\n");
-            //    foreach (Card card in deck.cards)
-            //    {
-            //        Console.WriteLine(card);
-            //    }
-            //    //throw new Exception("stopping");
-            //}
-
             List<MadeHand> madeHands = new();
 
             // Keep track of the made hands that the player's hands make.
@@ -86,14 +71,23 @@ public class ProbabilityCalculatorService
                 }
             }
 
-            foreach(int index in indicesOfWinningHands)
+            if(indicesOfWinningHands.Count > 1)
+            {
+                ties += 1;
+                tiedBoards.Add(currentBoard);
+            }
+
+            foreach (int index in indicesOfWinningHands)
             {
                 handWinningQuantities[index] += 1;
             }
+
             foreach(Card card in currentBoard.GetCards())
             {
                 Console.Write(card.ToString() + "; ");
             }
+
+            Console.Write("Winner: " + winningHands[0].Card1.ToString() + "; " + winningHands[0].Card2.ToString() + "ties: " + ties + "\n");
         }
         // Recursive step
         else
@@ -143,7 +137,6 @@ public class ProbabilityCalculatorService
 
     private Deck constructDeckGivenPlayedCards(List<PlayerHand> liveHands, Board currentBoard)
     {
-        Console.WriteLine("Constructdeck");
         Deck deck = new();
         List<Card> liveCards = new();
 
