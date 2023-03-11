@@ -342,12 +342,19 @@ public class MadeHandService
 
         List<Value> cardValues = getCardValues();
 
+        // Edge case for 5-high straights (i.e. straight that includes ace as bottom card). This is necessary as ace is the highest value in the Value enum, but it holds the lowest value in a high card straight.
+        if(cardValues.Contains(Value.A) && cardValues.Contains(Value.Num2) && cardValues.Contains(Value.Num3) && cardValues.Contains(Value.Num4) && cardValues.Contains(Value.Num5))
+        {
+            possibleStraight = new MadeHand(Hand.Straight, Value.Num5, null, null, null, null);
+        }
+
         // Run once if there are five cards in play, twice if there are six, and three times if there are seven.
         // This is the number of possible straights given the number of cards in play.
         // This loop starts at 2, 1, or 0 depending on if there are 7, 6, or 5 cards in play. This is so it finds the highest possible straight first.
         for (int i = _cardsInPlay.Count - 5; i >= 0; i--)
         {
             Value bottomCardValue = cardsInAscendingOrder.ElementAt(i).Value;
+
 
             if (cardValues.Contains(bottomCardValue)
                                 && cardValues.Contains((Value)((int)bottomCardValue + 1))
