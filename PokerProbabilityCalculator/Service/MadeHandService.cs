@@ -36,34 +36,55 @@ public class MadeHandService
     /// <returns>The winning made hand.</returns>
     public MadeHand DetermineBestMadeHand(List<MadeHand> madeHands)
     {
-        // The lowest possible hand in poker. A hand of 6-high, that is, a High Card hand where 6 is the highest card, does not exist.
-        // We start with the lowest possible hand - if we see any hands better, replace it.
-        MadeHand bestMadeHand = new(Hand.HighCard, Value.Num7, Value.Num6, Value.Num5, Value.Num4, Value.Num2);
+        // The lowest possible hand in poker.
+        MadeHand bestMadeHand = MadeHand.LowestPossibleMadeHand;
 
         foreach (MadeHand hand in madeHands)
         {
-            // The hand enum goes from least to greatest (High Card = 0, Royal Flush = 9), so this comparison is good.
-            if (hand.Hand > bestMadeHand.Hand)
+            int?[] handDifferences = GetHandDifferences(hand, bestMadeHand);
+
+            for (int i = 0; i < handDifferences.Length; i++)
             {
-                bestMadeHand = hand;
-            }
-            else if (hand.Hand == bestMadeHand.Hand)
-            {
-                // Compare the values of the two hands.
-                if (hand.Value > bestMadeHand.Value)
+                // If we discover a negative, we know this hand is worse.
+                if (handDifferences[i] < 0)
+                    break;
+
+                // If we discover a positive before seeing a negative, we know this hand is better.
+                else if (handDifferences[i] > 0)
+                {
                     bestMadeHand = hand;
-                else if (hand.Value2 > bestMadeHand.Value2)
-                    bestMadeHand = hand;
-                else if (hand.Value3 > bestMadeHand.Value3)
-                    bestMadeHand = hand;
-                else if (hand.Value4 > bestMadeHand.Value4)
-                    bestMadeHand = hand;
-                else if (hand.Value5 > bestMadeHand.Value5)
-                    bestMadeHand = hand;
+                    break;
+                }
+
+                // If the difference is exactly zero, we continue looking for differences.
             }
         }
 
         return bestMadeHand;
+    }
+
+    /// <summary>
+    /// For each element of the made hand (Hand, Value, Value2, etc...), determine which hand is better. A negative value indicates <paramref name="hand2"/> is better for that particular element; a positive value indicates <paramref name="hand1"/> is better for that particular element.
+    /// </summary>
+    /// <returns>An int? array containing the differences in the order [Hand, Value, Value2, Value3, Value4, Value5]. If some Values are null, the difference of those values is null.</returns>
+    public int?[] GetHandDifferences(MadeHand hand1, MadeHand hand2)
+    {
+        int handDifference = hand1.Hand - hand2.Hand;
+        int valueDifference = hand1.Value - hand2.Value;
+        int? value2Difference = (hand1.Value2 - hand2.Value2) ?? null;
+        int? value3Difference = (hand1.Value3 - hand2.Value3) ?? null;
+        int? value4Difference = (hand1.Value4 - hand2.Value4) ?? null;
+        int? value5Difference = (hand1.Value5 - hand2.Value5) ?? null;
+
+        return new int?[]
+        {
+                handDifference,
+                valueDifference,
+                value2Difference,
+                value3Difference,
+                value4Difference,
+                value5Difference
+        };
     }
 
     /// <summary>
@@ -343,7 +364,7 @@ public class MadeHandService
         List<Value> cardValues = getCardValues();
 
         // Edge case for 5-high straights (i.e. straight that includes ace as bottom card). This is necessary as ace is the highest value in the Value enum, but it holds the lowest value in a high card straight.
-        if(cardValues.Contains(Value.A) && cardValues.Contains(Value.Num2) && cardValues.Contains(Value.Num3) && cardValues.Contains(Value.Num4) && cardValues.Contains(Value.Num5))
+        if (cardValues.Contains(Value.A) && cardValues.Contains(Value.Num2) && cardValues.Contains(Value.Num3) && cardValues.Contains(Value.Num4) && cardValues.Contains(Value.Num5))
         {
             possibleStraight = new MadeHand(Hand.Straight, Value.Num5, null, null, null, null);
         }
