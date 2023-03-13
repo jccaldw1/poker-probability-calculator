@@ -1,8 +1,10 @@
 ﻿using PokerProbabilityCalculator.Model;
-using System.Collections.Generic;
 
 namespace PokerProbabilityCalculator.Service;
 
+/// <summary>
+/// Given a list of hands and an optional (partial) board, determines the frequency with which each hand will win given the board's runout.
+/// </summary>
 public class ProbabilityCalculatorService
 {
     private MadeHandService madeHandService;
