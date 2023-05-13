@@ -24,6 +24,18 @@ public class Deck
         return cards.Remove(cardToRemove);
     }
 
+    public bool RemoveRange(List<Card> cardsToRemove)
+    {
+        bool returnValue = true;
+        
+        foreach (Card cardToRemove in cards)
+        {
+            returnValue &= RemoveCard(cardToRemove);
+        }
+
+        return returnValue;
+    }
+
     private void Shuffle()
     {
         Random random = new();
