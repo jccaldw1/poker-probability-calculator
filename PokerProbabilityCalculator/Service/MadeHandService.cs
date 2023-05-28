@@ -1,4 +1,5 @@
 ﻿using PokerProbabilityCalculator.Model;
+using System.ComponentModel.Design;
 
 namespace PokerProbabilityCalculator.Service;
 
@@ -466,7 +467,10 @@ public class MadeHandService
         // One pair hand has three "kickers", the three remaining cards with the highest value.
         Stack<Value> remainingCards = convertListToStack(_cardsInPlay.Where(card => card.Value != onePairValue).OrderBy(card => card.Value).Select(card => card.Value).ToList());
 
-        possibleOnePair = new(Hand.OnePair, onePairValue, remainingCards.Pop(), remainingCards.Pop(), remainingCards.Pop(), null);
+        if(_cardsInPlay.Count > 2)
+            possibleOnePair = new(Hand.OnePair, onePairValue, remainingCards.Pop(), remainingCards.Pop(), remainingCards.Pop(), null);
+        else
+            possibleOnePair = new(Hand.OnePair, onePairValue, null, null, null, null);
 
         return possibleOnePair;
     }
@@ -477,7 +481,11 @@ public class MadeHandService
 
         Stack<Card> fiveHighestCards = convertListToStack(_cardsInPlay.OrderBy(card => card.Value).ToList());
 
-        MadeHand highCard = new(Hand.HighCard, fiveHighestCards.Pop().Value, fiveHighestCards.Pop().Value, fiveHighestCards.Pop().Value, fiveHighestCards.Pop().Value, fiveHighestCards.Pop().Value);
+        MadeHand highCard;
+        if(_cardsInPlay.Count() == 2)
+            highCard = new(Hand.HighCard, fiveHighestCards.Pop().Value, fiveHighestCards.Pop().Value, null, null, null);
+        else
+            highCard = new(Hand.HighCard, fiveHighestCards.Pop().Value, fiveHighestCards.Pop().Value, fiveHighestCards.Pop().Value, fiveHighestCards.Pop().Value, fiveHighestCards.Pop().Value);
 
         return highCard;
     }
