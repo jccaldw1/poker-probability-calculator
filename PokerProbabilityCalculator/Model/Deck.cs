@@ -27,13 +27,26 @@ public class Deck
     public bool RemoveRange(List<Card> cardsToRemove)
     {
         bool returnValue = true;
-        
-        foreach (Card cardToRemove in cards)
+
+        cardsToRemove.ForEach(card =>
         {
-            returnValue &= RemoveCard(cardToRemove);
-        }
+            returnValue &= RemoveCard(card);
+        });
 
         return returnValue;
+    }
+
+    public bool Contains(List<Card> cards)
+    {
+        foreach (Card card in cards)
+        {
+            if (!this.cards.Contains(card))
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     private void Shuffle()

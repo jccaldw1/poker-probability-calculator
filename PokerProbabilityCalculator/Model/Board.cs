@@ -40,6 +40,38 @@ public class Board
         return cardsOnBoard;
     }
 
+    public int NumberOfCardsPlayed()
+    {
+        int numberOfCards = 0;
+
+        if(Flop1 != null)
+        {
+            numberOfCards++;
+        }
+
+        if(Flop2 != null)
+        {
+            numberOfCards++;
+        }
+
+        if(Flop3 != null)
+        {
+            numberOfCards++;
+        }
+
+        if(Turn != null)
+        {
+            numberOfCards++;
+        }
+
+        if(River != null) 
+        {
+            numberOfCards++;
+        }
+
+        return numberOfCards;
+    }
+
     // Add a card to the board, wherever it is possible for it to be played.
     // TODO: If a card cannot be played, this method silently fails.
     public Board PlayCardOnBoard(Card cardToPlay)
