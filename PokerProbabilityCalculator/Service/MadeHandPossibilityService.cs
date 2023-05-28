@@ -17,7 +17,7 @@ public class MadeHandPossibilityService
         _deck.RemoveRange(board.GetCards());
         hands.ForEach((Action<PlayerHand>)(hand =>
         {
-            _deck.RemoveCard((Card)hand.Card2);
+            _deck.RemoveCard((Card)hand.Card1);
             _deck.RemoveCard((Card)hand.Card2);
         }));
     }
@@ -94,7 +94,7 @@ public class MadeHandPossibilityService
 
         int numberOfCardsThatNeedToContributeToStraightFlush = _board.GetCards().Count;
 
-        List<Card> cardsInPlay = new() { hand.Card2, hand.Card2 };
+        List<Card> cardsInPlay = new() { hand.Card1, hand.Card2 };
         cardsInPlay.AddRange(_board.GetCards());
 
         List<Suit> possibleStraightFlushSuits = new();
@@ -112,7 +112,7 @@ public class MadeHandPossibilityService
 
         foreach(Suit suit in possibleStraightFlushSuits)
         {
-            if(StraightPossibilityService.CanMakeStraightFlush(hand, _board, suit))
+            if(StraightPossibilityService.CanMakeStraightFlush(hand, _board, suit, _deck))
                 return true;
         }
 
@@ -231,9 +231,11 @@ public class MadeHandPossibilityService
         return false;
     }
 
+    // TODO: fix this. Either make the straightpossibilityservice take into account the deck (probably this) or make it return some indication of which straights are possible.
     public bool isStraightPossible(PlayerHand hand)
     {
-        return StraightPossibilityService.CanMakeStraight(hand, _board);
+        // Once we know we can make a straight with the given hand, 
+        return StraightPossibilityService.CanMakeStraight(hand, _board, _deck);
     }
 
     public bool isThreeOfAKindPossible(PlayerHand hand)
