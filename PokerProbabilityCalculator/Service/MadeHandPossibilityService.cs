@@ -338,4 +338,51 @@ public class MadeHandPossibilityService
 
         return false;
     }
+
+    public bool isPairPossible(PlayerHand hand)
+    {
+        List<Card> cardsInPlay = new()
+        {
+            hand.Card1,
+            hand.Card2,
+        };
+
+        cardsInPlay.AddRange(_board.GetCards());
+
+        List<Value> valuesInPlay = new();
+
+        foreach(Card card in cardsInPlay)
+        {
+            // If the value already is in the list of values, then we have a pair.
+            if (valuesInPlay.Contains(card.Value))
+            {
+                return true;
+            }
+            else
+            {
+                valuesInPlay.Add(card.Value);
+            }
+        }
+
+        // At this point all the values in play are unique. If we found a duplicate we have already returned true.
+
+        if(_board.NumberOfCardsPlayed() < 5)
+        {
+            foreach(Value value in valuesInPlay)
+            {
+                // If we can find another card with this value, return true;
+                if (_deck.cards.Any(card => card.Value == value))
+                {
+                    return false;
+                }
+            }
+        }
+        else
+        {
+            // If we have played all cards and don't have a pair, a pair isn't possible. Amazing!!!!
+            return false;
+        }
+
+        return false;
+    }
 }
