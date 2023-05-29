@@ -3,10 +3,15 @@ using PokerProbabilityCalculatorTest.Tests;
 
 Console.WriteLine("Hello, World!");
 
-HeadsUpTests headsUpTests = new();
+MadeHandPossibilityServiceTest madeHandPossibilityServiceTest = new();
 
-HandsCanBeFoundTest handsCanBeFoundTest = new();
+bool result = madeHandPossibilityServiceTest.StraightBlockedTest();
 
-bool testResult = handsCanBeFoundTest.RunAllTests();
-
-Console.WriteLine(testResult);
+if (result)
+{
+    Console.WriteLine("Test Successful!!");
+}
+else
+{
+    Console.WriteLine("Test unsuccessful :(((((");
+}
