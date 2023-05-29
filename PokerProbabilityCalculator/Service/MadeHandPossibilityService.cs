@@ -2,6 +2,9 @@
 
 namespace PokerProbabilityCalculator.Service;
 
+/// <summary>
+/// Given a list of hands and a board, determines whether each hand can be made. 
+/// </summary>
 public class MadeHandPossibilityService
 {
     private Board _board;
@@ -15,6 +18,7 @@ public class MadeHandPossibilityService
         _deck = new();
 
         _deck.RemoveRange(board.GetCards());
+
         hands.ForEach(hand =>
         {
             _deck.RemoveCard(hand.Card1);
@@ -53,9 +57,7 @@ public class MadeHandPossibilityService
             var suitedBroadwayCardsInPlay = broadwayCardsInPlay.Where(card => card.Suit == suit);
 
             if (suitedBroadwayCardsInPlay.Count() >= cardsThatNeedToContributeToRoyalFlush)
-            {
                 suitsThatCouldHaveRoyalFlush.Add(suit);
-            }
         }
 
         // Additionally, we need to examine the deck to determine if the cards needed are there.
@@ -64,9 +66,7 @@ public class MadeHandPossibilityService
             List<Card> royalFlushCardsForThisSuit = new();
 
             foreach (Value value in BroadwayCards)
-            {
                 royalFlushCardsForThisSuit.Add(new Card(suit, value));
-            }
 
             var suitedBroadwayCards = broadwayCardsInPlay.Where(card => card.Suit == suit).ToList();
 
@@ -88,9 +88,7 @@ public class MadeHandPossibilityService
         };
 
         foreach (Value value in Enum.GetValues(typeof(Value)))
-        {
             straightyValues.Add(value);
-        }
 
         int numberOfCardsThatNeedToContributeToStraightFlush = _board.GetCards().Count;
 
@@ -105,9 +103,7 @@ public class MadeHandPossibilityService
             var suitedCardsInPlay = cardsInPlay.Where(card => card.Suit == suit);
 
             if (suitedCardsInPlay.Count() >= numberOfCardsThatNeedToContributeToStraightFlush)
-            {
                 possibleStraightFlushSuits.Add(suit);
-            }
         }
 
         foreach(Suit suit in possibleStraightFlushSuits)
@@ -146,9 +142,7 @@ public class MadeHandPossibilityService
         frequenciesOfValues.ForEach(frequency =>
         {
             if(frequency.Value > numberOfCardsThatNeedToContributeToFourOfAKind)
-            {
                 valuesToLookFor.Add(frequency.Key);
-            }
         });
 
         foreach(Value value in valuesToLookFor)
@@ -354,36 +348,22 @@ public class MadeHandPossibilityService
         List<Value> valuesInPlay = new();
 
         foreach(Card card in cardsInPlay)
-        {
             // If the value already is in the list of values, then we have a pair.
             if (valuesInPlay.Contains(card.Value))
-            {
                 return true;
-            }
             else
-            {
                 valuesInPlay.Add(card.Value);
-            }
-        }
 
         // At this point all the values in play are unique. If we found a duplicate we have already returned true.
 
         if(_board.NumberOfCardsPlayed() < 5)
-        {
             foreach(Value value in valuesInPlay)
-            {
                 // If we can find another card with this value, return true;
                 if (_deck.cards.Any(card => card.Value == value))
-                {
                     return false;
-                }
-            }
-        }
         else
-        {
             // If we have played all cards and don't have a pair, a pair isn't possible. Amazing!!!!
             return false;
-        }
 
         return false;
     }
