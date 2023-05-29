@@ -15,11 +15,11 @@ public class MadeHandPossibilityService
         _deck = new();
 
         _deck.RemoveRange(board.GetCards());
-        hands.ForEach((Action<PlayerHand>)(hand =>
+        hands.ForEach(hand =>
         {
-            _deck.RemoveCard((Card)hand.Card1);
-            _deck.RemoveCard((Card)hand.Card2);
-        }));
+            _deck.RemoveCard(hand.Card1);
+            _deck.RemoveCard(hand.Card2);
+        });
     }
 
     public bool isRoyalFlushPossible(PlayerHand hand)
@@ -37,7 +37,7 @@ public class MadeHandPossibilityService
 
         List<Card> totalCardsInPlay = new List<Card>
         {
-            hand.Card2,
+            hand.Card1,
             hand.Card2
         };
 
@@ -127,7 +127,7 @@ public class MadeHandPossibilityService
 
         List<Card> cardsInPlay = new()
         {
-            hand.Card2,
+            hand.Card1,
             hand.Card2
         };
         _board.GetCards().ForEach(cardsInPlay.Add);
@@ -168,7 +168,7 @@ public class MadeHandPossibilityService
 
         List<Card> cardsInPlay = new()
         {
-            hand.Card2,
+            hand.Card1,
             hand.Card2
         };
 
@@ -216,8 +216,8 @@ public class MadeHandPossibilityService
         {
             List<Card> cardsInPlayOfThisSuit = new();
 
-            if (hand.Card2.Suit == suit)
-                cardsInPlayOfThisSuit.Add(hand.Card2);
+            if (hand.Card1.Suit == suit)
+                cardsInPlayOfThisSuit.Add(hand.Card1);
 
             if (hand.Card2.Suit == suit)
                 cardsInPlayOfThisSuit.Add(hand.Card2);
@@ -242,7 +242,7 @@ public class MadeHandPossibilityService
     {
         List<Card> cardsInPlay = new()
         {
-            hand.Card2,
+            hand.Card1,
             hand.Card2
         };
         _board.GetCards().ForEach(cardsInPlay.Add);
