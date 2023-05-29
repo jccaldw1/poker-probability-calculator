@@ -200,9 +200,43 @@ public class MadeHandPossibilityServiceTest
         boardToNotMakeFlush.Flop2 = new(Suit.Heart, Value.Num6);
         boardToNotMakeFlush.Flop3 = new(Suit.Diamond, Value.Num5);
 
-        MadeHandPossibilityService madeHandPossibilityService = new(new() { handToNotMakeFlush}, boardToNotMakeFlush);
+        MadeHandPossibilityService madeHandPossibilityService = new(new() { handToNotMakeFlush }, boardToNotMakeFlush);
 
         return madeHandPossibilityService.isFlushPossible(handToNotMakeFlush);
     }
+    #endregion
+
+    #region Straight Tests ;)
+
+    public bool StraightHappyPathTest()
+    {
+        PlayerHand handToMakeStraight = new(new(Suit.Spade, Value.Num3), new(Suit.Diamond, Value.Num5));
+
+        Board boardToMakeStraight = new();
+        boardToMakeStraight.PlayCardOnBoard(new(Suit.Heart, Value.Num7));
+        boardToMakeStraight.PlayCardOnBoard(new(Suit.Heart, Value.A));
+        boardToMakeStraight.PlayCardOnBoard(new(Suit.Heart, Value.K));
+
+        MadeHandPossibilityService madeHandPossibilityService = new(new() { handToMakeStraight }, boardToMakeStraight);
+
+        return madeHandPossibilityService.isStraightPossible(handToMakeStraight);
+    }
+
+    public bool StraightBlockedTest()
+    {
+        PlayerHand handToMakeStraight = new(new(Suit.Spade, Value.Num3), new(Suit.Diamond, Value.Num5));
+        PlayerHand handToBlockStraight = new(new(Suit.Heart, Value.Num4), new(Suit.Diamond, Value.Num4));
+        PlayerHand handToBlockStraight2 = new(new(Suit.Club, Value.Num4), new(Suit.Spade, Value.Num4));
+
+        Board boardToMakeStraight = new();
+        boardToMakeStraight.PlayCardOnBoard(new(Suit.Heart, Value.Num7));
+        boardToMakeStraight.PlayCardOnBoard(new(Suit.Heart, Value.J));
+        boardToMakeStraight.PlayCardOnBoard(new(Suit.Heart, Value.K));
+
+        MadeHandPossibilityService madeHandPossibilityService = new(new() { handToMakeStraight, handToBlockStraight, handToBlockStraight2 }, boardToMakeStraight);
+
+        return madeHandPossibilityService.isStraightPossible(handToMakeStraight);
+    }
+
     #endregion
 }
