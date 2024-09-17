@@ -21,7 +21,7 @@ public class MadeHandPossibilityServiceTest
 
         MadeHandPossibilityService madeHandPossibilityService = new(new() { handToMakeRoyalFlush}, royalFlushBoard);
 
-        return madeHandPossibilityService.isRoyalFlushPossible(handToMakeRoyalFlush);
+        return madeHandPossibilityService.NecessaryRoyalFlushCards(handToMakeRoyalFlush) != null;
     }
 
     public bool NoRoyalFlushesPossibleTest()
@@ -34,8 +34,8 @@ public class MadeHandPossibilityServiceTest
 
         MadeHandPossibilityService madeHandPossibilityService = new(new() { hand1, hand2, hand3, hand4 }, new());
 
-        bool result1 = madeHandPossibilityService.isRoyalFlushPossible(hand1);
-        bool result2 = madeHandPossibilityService.isRoyalFlushPossible(hand2);
+        bool result1 = madeHandPossibilityService.NecessaryRoyalFlushCards(hand1) != null;
+        bool result2 = madeHandPossibilityService.NecessaryRoyalFlushCards(hand2) != null;
 
         // expect both false
         return !(result1 && result2);
@@ -53,9 +53,9 @@ public class MadeHandPossibilityServiceTest
         straightFlushBoard.Flop2 = new(Suit.Diamond, Value.Num5);
         straightFlushBoard.Flop3 = new(Suit.Heart, Value.Num5);
 
-        MadeHandPossibilityService madeHandPossibilityService1 = new(new() { handToMakeStraightFlush }, straightFlushBoard);
+        MadeHandPossibilityService madeHandPossibilityService = new(new() { handToMakeStraightFlush }, straightFlushBoard);
 
-        return madeHandPossibilityService1.isStraightFlushPossible(handToMakeStraightFlush);
+        return madeHandPossibilityService.NecessaryStraightFlushCards(handToMakeStraightFlush) != null;
     }
 
     public bool StraightFlushRemovedTest()
@@ -70,7 +70,7 @@ public class MadeHandPossibilityServiceTest
 
         MadeHandPossibilityService madeHandPossibilityService1 = new(new() { handToMakeStraightFlush }, straightFlushBoard);
 
-        bool straightFlushPossible = madeHandPossibilityService1.isStraightFlushPossible(handToMakeStraightFlush);
+        bool straightFlushPossible = madeHandPossibilityService1.NecessaryStraightFlushCards(handToMakeStraightFlush) != null;
 
         return !straightFlushPossible;
     }
@@ -86,7 +86,7 @@ public class MadeHandPossibilityServiceTest
 
         MadeHandPossibilityService madeHandPossibilityService = new(new() { handToMake5HighStraightFlush }, boardToMake5HighStraightFlush);
 
-        return madeHandPossibilityService.isStraightFlushPossible(handToMake5HighStraightFlush);
+        return madeHandPossibilityService.NecessaryStraightFlushCards(handToMake5HighStraightFlush) != null;
     }
 
     public bool KingHighStraightFlushTest()
@@ -100,7 +100,7 @@ public class MadeHandPossibilityServiceTest
 
         MadeHandPossibilityService madeHandPossibilityService = new(new() { handToMakeKingHighStraightFlush }, boardToMake5HighStraightFlush);
 
-        return madeHandPossibilityService.isStraightFlushPossible(handToMakeKingHighStraightFlush);
+        return madeHandPossibilityService.NecessaryStraightFlushCards(handToMakeKingHighStraightFlush) != null;
     }
 
     #endregion
@@ -118,7 +118,7 @@ public class MadeHandPossibilityServiceTest
 
         MadeHandPossibilityService madeHandPossibilityService = new(new() { handToMakeFourOfAKind }, fourOfAKindBoard);
 
-        bool fourOfAKindFound = madeHandPossibilityService.isFourOfAKindPossible(handToMakeFourOfAKind);
+        bool fourOfAKindFound = madeHandPossibilityService.NecessaryCardsToMakeFourOfAKind(handToMakeFourOfAKind) != null;
 
         return fourOfAKindFound;
     }
@@ -135,7 +135,7 @@ public class MadeHandPossibilityServiceTest
 
         MadeHandPossibilityService madeHandPossibilityService = new(new() { handToMakeFourOfAKind, handToBlockFourOfAKind }, fourOfAKindBoard);
 
-        bool fourOfAKindFound = madeHandPossibilityService.isFourOfAKindPossible(handToMakeFourOfAKind);
+        bool fourOfAKindFound = madeHandPossibilityService.NecessaryCardsToMakeFourOfAKind(handToMakeFourOfAKind) != null;
 
         return !fourOfAKindFound;
     }
@@ -154,7 +154,7 @@ public class MadeHandPossibilityServiceTest
 
         MadeHandPossibilityService madeHandPossibilityService = new(new() { handToMakeFullHouse }, boardToMakeFullHouse);
 
-        return madeHandPossibilityService.isFullHousePossible(handToMakeFullHouse);
+        return madeHandPossibilityService.NecessaryCardsToMakeFullHouse(handToMakeFullHouse) != null;
     }
 
     public bool NoFullHouseOnNonPairedBoardTest()
@@ -171,7 +171,7 @@ public class MadeHandPossibilityServiceTest
 
         MadeHandPossibilityService madeHandPossibilityService = new(new() { handToMakeFullHouse, handToBlock, handToBlock2 }, boardToMakeFullHouse);
 
-        return madeHandPossibilityService.isFullHousePossible(handToMakeFullHouse);
+        return madeHandPossibilityService.NecessaryCardsToMakeFullHouse(handToMakeFullHouse) != null;
     }
 
     #endregion
@@ -188,7 +188,7 @@ public class MadeHandPossibilityServiceTest
 
         MadeHandPossibilityService madeHandPossibilityService = new(new() { handToMakeFlush }, boardToMakeFlush);
 
-        return madeHandPossibilityService.isFlushPossible(handToMakeFlush);
+        return madeHandPossibilityService.NecessaryCardsToMakeFlush(handToMakeFlush) != null;
     }
 
     public bool FlushNotPossibleTest()
@@ -202,7 +202,7 @@ public class MadeHandPossibilityServiceTest
 
         MadeHandPossibilityService madeHandPossibilityService = new(new() { handToNotMakeFlush }, boardToNotMakeFlush);
 
-        return madeHandPossibilityService.isFlushPossible(handToNotMakeFlush);
+        return madeHandPossibilityService.NecessaryCardsToMakeFlush(handToNotMakeFlush) != null;
     }
     #endregion
 
@@ -219,7 +219,7 @@ public class MadeHandPossibilityServiceTest
 
         MadeHandPossibilityService madeHandPossibilityService = new(new() { handToMakeStraight }, boardToMakeStraight);
 
-        return madeHandPossibilityService.isStraightPossible(handToMakeStraight);
+        return madeHandPossibilityService.NecessaryCardsToMakeStraight(handToMakeStraight) != null;
     }
 
     public bool StraightBlockedTest()
@@ -234,8 +234,8 @@ public class MadeHandPossibilityServiceTest
         boardToMakeStraight.PlayCardOnBoard(new(Suit.Heart, Value.K));
 
         MadeHandPossibilityService madeHandPossibilityService = new(new() { handToMakeStraight, handToBlockStraight, handToBlockStraight2 }, boardToMakeStraight);
-
-        return madeHandPossibilityService.isStraightPossible(handToMakeStraight);
+        
+        return madeHandPossibilityService.NecessaryCardsToMakeStraight(handToMakeStraight) == null;
     }
 
     #endregion
