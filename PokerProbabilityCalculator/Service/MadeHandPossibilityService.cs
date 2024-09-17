@@ -90,50 +90,28 @@ public class MadeHandPossibilityService
 
     public List<Card>? NecessaryStraightFlushCards(PlayerHand hand)
     {
-        List<Value> straightyValues = new()
-        {
-            Value.A
-        };
-
-        foreach (Value value in Enum.GetValues(typeof(Value)))
-            straightyValues.Add(value);
-
-        int numberOfCardsThatNeedToContributeToStraightFlush = _board.GetCards().Count;
-
-        List<Card> cardsInPlay = new() { hand.Card1, hand.Card2 };
+        List<Card> cardsThatCanMakeStraightFlush = new();
+        List<Card> cardsInPlay = new();
+        
+        cardsInPlay.Add(hand.Card1);
+        cardsInPlay.Add(hand.Card2);
+        
         cardsInPlay.AddRange(_board.GetCards());
-
-        List<Suit> possibleStraightFlushSuits = new();
-
-        // Check for suits with possible flushes first because it is easier.
+        
         foreach (Suit suit in Enum.GetValues(typeof(Suit)))
         {
-            var suitedCardsInPlay = cardsInPlay.Where(card => card.Suit == suit);
-
-            if (suitedCardsInPlay.Count() >= numberOfCardsThatNeedToContributeToStraightFlush)
-                possibleStraightFlushSuits.Add(suit);
-        }
-
-        List<Card>? cardsThatCouldMakeStraightFlush = null;
-
-        foreach(Suit suit in possibleStraightFlushSuits)
-        {
-            List<Card>? straightFlushCards = StraightPossibilityService.CanMakeStraightFlush(hand, _board, suit, _deck);
-
-            if(straightFlushCards != null)
+            // what about blocking hands???
+            List<Card>? cardsOfSuitThatCanMakeStraightFlush = StraightPossibilityService.CanMakeStraightFlush(hand, _board, suit, _deck);
+            if (cardsOfSuitThatCanMakeStraightFlush != null)
             {
-                straightFlushCards.ForEach(card =>
-                {
-                    if(cardsInPlay.Select(cardInPlay => cardInPlay.Value).Contains(card.Value))
-                        straightFlushCards.Remove(card);
-                });
-
-                cardsThatCouldMakeStraightFlush ??= new();
-                cardsThatCouldMakeStraightFlush.AddRange(straightFlushCards);
+                cardsThatCanMakeStraightFlush.AddRange(cardsOfSuitThatCanMakeStraightFlush);
             }
         }
 
-        return cardsThatCouldMakeStraightFlush;
+        if (cardsThatCanMakeStraightFlush.Count == 0)
+            return null;
+        
+        return cardsThatCanMakeStraightFlush;
     }
 
     public List<Card>? NecessaryCardsToMakeFourOfAKind(PlayerHand hand)
@@ -274,7 +252,7 @@ public class MadeHandPossibilityService
 
     public List<Card>? NecessaryCardsToMakeStraight(PlayerHand hand) => StraightPossibilityService.CanMakeStraight(hand, _board, _deck);
 
-    public List<Card>? isThreeOfAKindPossible(PlayerHand hand)
+    public List<Card>? NecessaryCardsToMakeThreeOfAKind(PlayerHand hand)
     {
         List<Card> cardsInPlay = new()
         {

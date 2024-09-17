@@ -18,6 +18,9 @@ Debug.Assert(madeHandPossibilityServiceTest.FourOfAKindRemovedTest());
 Debug.Assert(madeHandPossibilityServiceTest.FullHouseHappyPathTest());
 Debug.Assert(madeHandPossibilityServiceTest.NoFullHouseOnNonPairedBoardTest());
 Debug.Assert(madeHandPossibilityServiceTest.FlushHappyPathTest());
+
+// current failing test
 Debug.Assert(madeHandPossibilityServiceTest.FlushNotPossibleTest());
 Debug.Assert(madeHandPossibilityServiceTest.StraightHappyPathTest());
 Debug.Assert(madeHandPossibilityServiceTest.StraightBlockedTest());
+Console.WriteLine("Tests complete!");

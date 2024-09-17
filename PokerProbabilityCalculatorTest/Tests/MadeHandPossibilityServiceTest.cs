@@ -68,9 +68,11 @@ public class MadeHandPossibilityServiceTest
         straightFlushBoard.Flop2 = new(Suit.Diamond, Value.Num5);
         straightFlushBoard.Flop3 = new(Suit.Heart, Value.Num5);
 
-        MadeHandPossibilityService madeHandPossibilityService1 = new(new() { handToMakeStraightFlush }, straightFlushBoard);
+        MadeHandPossibilityService madeHandPossibilityService1 = new(new() { handToMakeStraightFlush, handToBlock }, straightFlushBoard);
 
-        bool straightFlushPossible = madeHandPossibilityService1.NecessaryStraightFlushCards(handToMakeStraightFlush) != null;
+        var cards = madeHandPossibilityService1.NecessaryStraightFlushCards(handToMakeStraightFlush);
+
+        bool straightFlushPossible = cards != null;
 
         return !straightFlushPossible;
     }
@@ -202,7 +204,8 @@ public class MadeHandPossibilityServiceTest
 
         MadeHandPossibilityService madeHandPossibilityService = new(new() { handToNotMakeFlush }, boardToNotMakeFlush);
 
-        return madeHandPossibilityService.NecessaryCardsToMakeFlush(handToNotMakeFlush) != null;
+        // Cards to make flush must be empty; i.e. a flush is not possible.
+        return madeHandPossibilityService.NecessaryCardsToMakeFlush(handToNotMakeFlush) == null;
     }
     #endregion
 
@@ -238,5 +241,19 @@ public class MadeHandPossibilityServiceTest
         return madeHandPossibilityService.NecessaryCardsToMakeStraight(handToMakeStraight) == null;
     }
 
+    #endregion
+
+    #region Three of a Kind Tests
+
+    public bool ThreeOfAKindHappyPathTest()
+    {
+        PlayerHand hand = new(new(Suit.Club, Value.Num2), new(Suit.Spade, Value.Num2));
+    }
+
+    public bool ThreeOfAKindImpossibleTest()
+    {
+        
+    }
+    
     #endregion
 }
